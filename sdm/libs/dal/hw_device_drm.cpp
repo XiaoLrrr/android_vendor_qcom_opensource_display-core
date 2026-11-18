@@ -1445,7 +1445,7 @@ DisplayError HWDeviceDRM::PowerOff(bool teardown, SyncPoints *sync_points) {
     pending_power_state_ = kPowerStateOff;
     return kErrorDeferred;
   }
-#ifdef SEC_FINGERPRINT_MASK
+#if defined(SEC_FINGERPRINT_MASK) || defined(OPLUS_FINGERPRINT_MASK)
   if (hw_panel_info_.is_primary_panel) {
     if (current_mask_state_) {
       current_mask_state_ = 0;
@@ -1671,6 +1671,15 @@ void HWDeviceDRM::SetupAtomic(Fence::ScopedRef &scoped_ref, HWLayersInfo *hw_lay
 #ifdef OPLUS_FINGERPRINT_MASK
   if (hw_panel_info_.is_primary_panel) {
     uint32_t mask_state = 0;
+
+    if (hw_layers_info->common_info) {
+      if (hw_layers_info->common_info->flags.fod_dim_present) {
+        mask_state |= OPLUS_OFP_PROPERTY_DIM_LAYER;
+      }
+      if (hw_layers_info->common_info->flags.fod_pressed_present) {
+        mask_state |= OPLUS_OFP_PROPERTY_FINGERPRESS_LAYER;
+      }
+    }
 
     for (uint32_t i = 0; i < hw_layer_count; i++) {
       const std::string &name = hw_layers_info->hw_layers[i].layer_name;

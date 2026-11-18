@@ -62,6 +62,14 @@
 #include <hardware/display_defs.h>
 #endif
 
+#ifdef OPLUS_FINGERPRINT_MASK
+#include <UdfpsExtension.h>
+#ifdef UDFPS_TOUCHED_LAYER_NAME
+#undef UDFPS_TOUCHED_LAYER_NAME
+#define UDFPS_TOUCHED_LAYER_NAME "SurfaceView[UdfpsControllerOverlay]"
+#endif
+#endif
+
 #define __CLASS__ "SDMDisplay"
 
 namespace sdm {
@@ -1018,6 +1026,13 @@ void SDMDisplay::BuildLayerStack() {
 
     layer->layer_id = sdm_layer->GetId();
     layer->layer_name = sdm_layer->GetName();
+#ifdef OPLUS_FINGERPRINT_MASK
+    if (layer->layer_name.find(UDFPS_DIM_LAYER_NAME) != std::string::npos) {
+      layer_stack_.flags.fod_dim_present = 1;
+    } else if (layer->layer_name.find(UDFPS_TOUCHED_LAYER_NAME) != std::string::npos) {
+      layer_stack_.flags.fod_pressed_present = 1;
+    }
+#endif
     layer->geometry_changes = sdm_layer->GetGeometryChanges();
     layer_stack_.layers.push_back(layer);
   }

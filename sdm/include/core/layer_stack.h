@@ -430,12 +430,15 @@ struct LayerStackFlags {
       uint32_t only_video_updating : 1;  //!< This flag indicates only video layers are updating
 
       uint32_t fod_pressed_present : 1;
+
+      uint32_t fod_dim_present : 1;
     };
 
     uint32_t flags = 0;               //!< For initialization purpose only.
                                       //!< Client shall not refer it directly.
   };
 };
+static_assert(sizeof(LayerStackFlags) == sizeof(uint32_t), "LayerStackFlags ABI size mismatch");
 
 /*! @brief This structure defines an array of display layer rectangles.
 
